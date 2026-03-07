@@ -1,0 +1,155 @@
+Screen {
+	background: $boost;
+	color: $text;
+	layers: term modal footer;
+}
+
+.panel {
+	border: round $panel;
+	padding: 1 1;
+	margin: 0 1;
+	width: 1fr;
+}
+
+.panel-title {
+	text-style: bold;
+	color: $accent;
+	height: 1;
+}
+
+.side-panel {
+	width: 40;
+}
+
+
+.res-add-button {
+	margin-left: 1;
+	max-width: 3;
+	width: 3;
+}
+
+
+.haxelibs-list {
+	height: 12
+}
+
+.module-input {
+	width: 1fr;
+}
+
+.small-select {
+	width: 24;
+	overflow: hidden;
+}
+
+.info-vgroup {
+	margin-bottom: 1;
+}
+
+.out-button {
+	width: 1fr;
+	min-width: 7;
+}
+
+
+.terminal-window {
+	width: 1fr;
+	height: 20;
+	dock: bottom;
+}
+
+.terminal-window Log {
+	width: 1fr;
+	height: 1fr;
+	margin-top: 1;
+}
+
+.term-close-button {
+	align-horizontal: right;
+	dock: right;
+}
+
+
+Footer {
+	dock: bottom;
+	layer: footer;
+	transition: background 200ms out_quad;
+}
+
+Footer .footer--description {
+	transition: color 200ms out_quad;
+}
+
+Footer.footer-preparing {
+	background: sandybrown;
+}
+
+Footer.footer-preparing .footer--description {
+	color: #fef3c7;
+}
+
+Footer.footer-running {
+	background: steelblue;
+}
+
+Footer.footer-running .footer--description {
+	color: #e0f2fe;
+}
+
+Footer.footer-success {
+	background: seagreen;
+}
+
+Footer.footer-success .footer--description {
+	color: #dcfce7;
+}
+
+Footer.footer-error {
+	background: firebrick;
+}
+
+Footer.footer-error .footer--description {
+	color: #fee2e2;
+}
+
+
+EditCustomHxmlScreen {
+    align: center middle;
+    border: thick $background 80%;
+	layer: modal;
+}
+
+EditCustomHxmlScreen HorizontalGroup {
+    padding: 1 1;
+    width: 80;
+    height: auto;
+}
+
+#customHxmlTextArea {
+    width: 80;
+    height: 24;
+}
+
+
+
+
+
+.terminal-buttons-panel {
+	dock: bottom;
+	layer: term;
+	margin-bottom: 1;
+	width: 9;
+	height: 2;
+}
+
+.terminal-buttons-group {
+	width: 9;
+	height: 2;
+}
+
+.term-button {
+	min-width: 3;
+	width: 3;
+	min-height: 1;
+	height: 1;
+}

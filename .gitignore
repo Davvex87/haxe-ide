@@ -1,0 +1,35 @@
+# Virtual envs
+.venv/
+env/
+venv/
+
+# PyInstaller build artifacts
+dist/
+build/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+pip-wheel-metadata/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+
+# Logs
+*.log
+
+# Haxelib
+.haxelib
+haxelib/haxe-ide
+haxelib/haxe-ide.exe

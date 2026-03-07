@@ -1,0 +1,20 @@
+{
+	"resources": [
+		{
+			"path": "Test",
+			"type": "haxe_module",
+			"content": "class Test {\n\tstatic function main() {\n\t\ttrace(\"Haxe is great!\");\n\t}\n}\n"
+		},
+		{
+			"path": "Macro",
+			"type": "haxe_module",
+			"content": "// use this for macros or other classes\nclass Macro {}\n"
+		}
+	],
+	"options": {
+		"mainClass": "Test",
+		"target": "eval",
+		"libraries": [],
+		"customHxmlFlags": []
+	}
+}

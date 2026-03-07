@@ -1,0 +1,10 @@
+{
+	"name": "haxe-ide",
+	"url" : "https://github.com/Davvex87/haxe-ide/",
+	"license": "MIT",
+	"tags": [],
+	"description": "A small TUI application for composing and testing Haxe workspaces.",
+	"version": "1.0.0",
+	"releasenote": "Initial release.",
+	"contributors": ["Davvex87"]
+}
