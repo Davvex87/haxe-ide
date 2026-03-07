@@ -1,7 +1,7 @@
 <div align="center">
 
 # Haxe-IDE
-<img width=50% src="https://github.com/Davvex87/haxe-ide/blob/main/res/app.png?raw=true">
+<img width=90% src="https://github.com/Davvex87/haxe-ide/blob/main/res/app.png?raw=true">
 
 [![Haxe](https://img.shields.io/badge/Available%20On-haxelib-orange.svg)](https://haxe.org/)
 ![OS support](https://img.shields.io/badge/OS-Linux%20Windows-red)
@@ -13,7 +13,7 @@
 ---
 
 A small TUI application for composing and testing Haxe workspaces. It provides a code editor, project options, and a terminal-like output area so you can quickly prototype Haxe modules and run them locally.<br>
-[**_Showcase video_**](https://github.com/Davvex87/haxe-ide/blob/main/res/showcase-video.mp4?raw=true)
+[**_Showcase video_**](https://github.com/Davvex87/haxe-ide/blob/main/res/showcase-video.mp4)
 
 ## ✨ Features
 
