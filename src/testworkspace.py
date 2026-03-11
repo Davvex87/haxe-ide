@@ -132,7 +132,10 @@ class TestWorkspace:
 			args.append(lib)
 
 		for flag in self.custom_hxml_flags:
-			args.append(flag)
+			split = flag.split(" ", 1)
+			args.append(split[0])
+			if len(split) > 1:
+				args.append(split[1])
 
 		for res in resources:
 			args.append("--resource")
