@@ -248,6 +248,8 @@ class TerminalButtonsPanel(Static):
 		if event.button.id == "openTerminalButton":
 			terminalWindow = self.app.query_one("#terminalWindow", TerminalWindow)
 			terminalWindow.display = True
+		elif event.button.id == "checkWsButton":
+			self.app.check_ws()
 		elif event.button.id == "runWsButton":
 			self.app.start_test_ws()
 		elif event.button.id == "stopWsButton":
@@ -405,6 +407,69 @@ class MyApp(App):
 		CustomHxmlList = options["customHxmlFlags"]
 
 
+	def check_ws(self):
+		global HaxeTestWorkspace
+
+		self.query_one(CodeEditorPanel).disabled = True
+		self.query_one(HaxeOptionsPanel).disabled = True
+
+		self.query_one("#checkWsButton", Button).disabled = True
+		self.query_one("#runWsButton", Button).disabled = True
+		self.query_one("#stopWsButton", Button).disabled = True
+
+		log = self.query_one(RichLog)
+		log.clear()
+
+		self._set_footer_state_preparing()
+
+		CustomHxmlList.append("--define no-compilation")
+		create_ws()
+		
+		if HaxeTestWorkspace is not None:
+			
+			def on_setup():
+				self._set_footer_state_preparing()
+			
+			def on_start():
+				self._set_footer_state_running()
+				self.bell()
+			
+			def on_stdout(line: str):
+				log.write(line.rstrip())
+
+			def on_comp_stdout(line: str):
+				log.write("[blue]" + line.rstrip() + "[/blue]")
+			
+			def on_stderr(line: str):
+				log.write("[red]" + line.rstrip() + "[/red]")
+			
+			def on_finish(exit_code: int):
+				if self._manual_stop:
+					self._set_footer_state_default()
+				elif exit_code == 0:
+					self._set_footer_state_success()
+					self.notify("Check completed successfully! No compile-time errors were found.", severity="information")
+				else:
+					self._set_footer_state_error()
+					self.bell()
+					self.notify(f"Check failed! Check the console for more information.", severity="error")
+				
+				self._cleanup_after_run()
+				self._manual_stop = False
+			
+			HaxeTestWorkspace.on_setup(on_setup)
+			HaxeTestWorkspace.on_start(on_start)
+			HaxeTestWorkspace.on_comp_stdout(on_comp_stdout)
+			HaxeTestWorkspace.on_stdout(on_stdout)
+			HaxeTestWorkspace.on_stderr(on_stderr)
+			HaxeTestWorkspace.on_finish(on_finish)
+			
+			HaxeTestWorkspace.setup()
+			CustomHxmlList.pop()
+			HaxeTestWorkspace._stopped_during_compile = True
+			HaxeTestWorkspace.run()
+
+		self.query_one("#stopWsButton", Button).disabled = False
 
 	def start_test_ws(self):
 		global HaxeTestWorkspace

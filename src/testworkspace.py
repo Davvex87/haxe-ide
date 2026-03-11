@@ -96,6 +96,9 @@ class TestWorkspace:
 
 		args = ["-m", self.main_class]
 
+		if "--define no-compilation" in self.custom_hxml_flags:
+			self.target = "neko"
+
 		if self.target == "eval":
 			args.append("--interp")
 		elif self.target == "javascript":
