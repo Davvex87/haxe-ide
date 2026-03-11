@@ -14,7 +14,7 @@ from textual.widgets import (
 	TabPane,
 	Button,
 	Label,
-	Log,
+	RichLog,
 	Footer
 )
 from haxelib import *
@@ -260,7 +260,7 @@ class TerminalWindow(Static):
 			Label("Terminal Output", classes="panel-title"),
 			Button("_", classes="term-button term-close-button", variant="primary", compact=True, id="closeTerminalButton")
 		)
-		yield Log(classes="terminal-log")
+		yield RichLog(classes="terminal-log", markup=True)
 	
 	def on_button_pressed(self, event: Button.Pressed) -> None:
 		if event.button.id == "closeTerminalButton":
@@ -357,20 +357,18 @@ class MyApp(App):
 		self.loadDataFile(str(resource_path("examples", exampleName + ".json").resolve()))
 
 	def loadDataFile(self, filePath):
-		log = self.query_one(Log)
+		log = self.query_one(RichLog)
 		try:
 			with open(filePath, "r") as file:
 				self.loadData(json.load(file))
 		except json.decoder.JSONDecodeError as e:
-			log.write_line(f"Error decoding data: {e}")
+			log.write(f"[red]Error decoding data: {e}[/red]")
 			self.notify(f"Failed to decode data file {Path(filePath).name}.\nOpen the terminal for more information.", severity="error", timeout=10)
 		except Exception as e:
-			log.write_line(f"Error loading data: {e}")
+			log.write(f"[red]Error loading data: {e}[/red]")
 			self.notify(f"Failed to load data file {Path(filePath).name}.\nOpen the terminal for more information.", severity="error", timeout=10)
 
 	def loadData(self, data):
-		log = self.query_one(Log)
-
 		# Modules
 		moduleTabsContent = self.query_one("#moduleTabsContent", TabbedContent)
 		moduleTabsContent.clear_panes()
@@ -418,7 +416,7 @@ class MyApp(App):
 		self.query_one("#runWsButton", Button).disabled = True
 		self.query_one("#stopWsButton", Button).disabled = True
 
-		log = self.query_one(Log)
+		log = self.query_one(RichLog)
 		log.clear()
 
 		self._set_footer_state_preparing()
@@ -432,12 +430,16 @@ class MyApp(App):
 			
 			def on_start():
 				self._set_footer_state_running()
+				self.bell()
 			
 			def on_stdout(line: str):
-				log.write_line(line.rstrip())
+				log.write(line.rstrip())
+
+			def on_comp_stdout(line: str):
+				log.write("[blue]" + line.rstrip() + "[/blue]")
 			
 			def on_stderr(line: str):
-				log.write_line(line.rstrip())
+				log.write("[red]" + line.rstrip() + "[/red]")
 			
 			def on_finish(exit_code: int):
 				if self._manual_stop:
@@ -447,6 +449,7 @@ class MyApp(App):
 					self.notify("Process completed successfully", severity="information")
 				else:
 					self._set_footer_state_error()
+					self.bell()
 					self.notify(f"Process failed with exit code: {exit_code}", severity="error")
 				
 				self._cleanup_after_run()
@@ -454,6 +457,7 @@ class MyApp(App):
 			
 			HaxeTestWorkspace.on_setup(on_setup)
 			HaxeTestWorkspace.on_start(on_start)
+			HaxeTestWorkspace.on_comp_stdout(on_comp_stdout)
 			HaxeTestWorkspace.on_stdout(on_stdout)
 			HaxeTestWorkspace.on_stderr(on_stderr)
 			HaxeTestWorkspace.on_finish(on_finish)

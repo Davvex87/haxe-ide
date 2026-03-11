@@ -45,6 +45,7 @@ class TestWorkspace:
 		self._on_setup: Optional[Callable[[], None]] = None
 		self._on_cleanup: Optional[Callable[[], None]] = None
 		self._on_start: Optional[Callable[[], None]] = None
+		self._on_comp_stdout: Optional[Callable[[str], None]] = None
 		self._on_stdout: Optional[Callable[[str], None]] = None
 		self._on_stderr: Optional[Callable[[str], None]] = None
 		self._on_finish: Optional[Callable[[int], None]] = None
@@ -162,9 +163,9 @@ class TestWorkspace:
 				cwd=self.path
 			)
 			
-			if self._on_stdout is not None:
-				self._compile_proc.on_stdout(self._on_stdout)
-			
+			if self._on_comp_stdout is not None:
+				self._compile_proc.on_stdout(self._on_comp_stdout)
+
 			if self._on_stderr is not None:
 				self._compile_proc.on_stderr(self._on_stderr)
 			
@@ -279,6 +280,9 @@ class TestWorkspace:
 
 	def on_start(self, func: Callable[[], None]):
 		self._on_start = func
+
+	def on_comp_stdout(self, func: Callable[[str], None]):
+		self._on_comp_stdout = func
 
 	def on_stdout(self, func: Callable[[str], None]):
 		self._on_stdout = func
