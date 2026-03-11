@@ -6,7 +6,7 @@
 [![Haxe](https://img.shields.io/badge/Available%20On-haxelib-orange.svg)](https://haxe.org/)
 ![OS support](https://img.shields.io/badge/OS-Linux%20Windows-red)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](haxelib.json)
+[![Version](https://img.shields.io/badge/Version-1.1.0-green.svg)](haxelib.json)
 
 </div>
 
