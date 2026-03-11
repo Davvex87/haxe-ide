@@ -162,6 +162,9 @@ class TestWorkspace:
 				cwd=self.path
 			)
 			
+			if self._on_stdout is not None:
+				self._compile_proc.on_stdout(self._on_stdout)
+			
 			if self._on_stderr is not None:
 				self._compile_proc.on_stderr(self._on_stderr)
 			
