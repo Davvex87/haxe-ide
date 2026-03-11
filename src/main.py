@@ -1,5 +1,5 @@
 from textual.app import App, ComposeResult, SystemCommand
-from textual.containers import HorizontalGroup, VerticalGroup, VerticalScroll
+from textual.containers import Grid, HorizontalGroup, VerticalGroup, VerticalScroll
 from textual.command import CommandPalette
 from textual.screen import ModalScreen
 from textual.binding import Binding
@@ -29,7 +29,7 @@ from resources import resource_path
 import uuid
 
 
-TARGETS = ("Eval", "Javascript", "Neko", "Hashlink", "CPPIA")
+TARGETS = ("Eval", "Javascript", "Neko", "Hashlink", "CPPIA", "Lua", "Python", "C++")
 MODULE_TYPES = ("Haxe Module", "Json Resource", "Plain Resource")
 
 Application = None
@@ -43,6 +43,8 @@ def to_snake_case(s):
 	s = re.sub(r'[^a-zA-Z0-9]', '_', s)
 	s = re.sub(r'_+', '_', s)
 	return s.strip('_').lower()
+
+LastTarget = to_snake_case(TARGETS[0])
 
 def create_ws_params(main_class, target, haxelibs, custom_hxml_flags, modules) -> TestWorkspace | None:
 	global HaxeTestWorkspace
@@ -189,6 +191,16 @@ class HaxeOptionsPanel(Static):
 		if event.button.id == "customHxmlButton":
 			self.app.push_screen(EditCustomHxmlScreen())
 
+	def on_select_changed(self, event: Select.Changed) -> None:
+		if event.select.id == "targetSelect":
+			global LastTarget
+			target = event.value
+			if target == "c":
+				self.app.push_screen(ConfirmCppTargetScreen())
+			else:
+				LastTarget = target
+
+
 class EditCustomHxmlScreen(ModalScreen):
 	def compose(self) -> ComposeResult:
 		yield HorizontalGroup(
@@ -203,6 +215,25 @@ class EditCustomHxmlScreen(ModalScreen):
 			CustomHxmlList.clear()
 			CustomHxmlList = self.query_one("#customHxmlTextArea", TextArea).text.splitlines()
 			self.app.pop_screen()
+
+class ConfirmCppTargetScreen(ModalScreen):
+	def compose(self) -> ComposeResult:
+		yield Grid(
+			Label("The target you have selected (C++) may take a few minutes to compile and run.\n[orange]Are you sure you want to continue with C++?[/orange]", id="question"),
+			Button("Revert", variant="primary", id="revertButton"),
+			Button("Yes", variant="error", id="yesButton"),
+			id="dialog",
+		)
+
+	def on_button_pressed(self, event: Button.Pressed) -> None:
+		global LastTarget
+		targetSelect = self.app.query_one("#targetSelect", Select)
+		if event.button.id == "yesButton":
+			self.app.pop_screen()
+		elif event.button.id == "revertButton":
+			self.app.pop_screen()
+			with targetSelect.prevent(Select.Changed):
+				targetSelect.value = LastTarget
 
 class TerminalButtonsPanel(Static):
 	def compose(self) -> ComposeResult:

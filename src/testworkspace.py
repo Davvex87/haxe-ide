@@ -1,10 +1,35 @@
 import tempfile
 import os
 import time
+import shutil
 from typing import Callable, Optional, List
 from managedprocess import ManagedProcess
 import haxe
 from pathlib import Path
+
+
+def find_lang_executable(base: str = "lua", versions: List[str] = None) -> Optional[str]:
+	if versions is None:
+		if base == "lua":
+			versions = ["5.4", "5.3", "5.2", "5.1"]
+		elif base == "python":
+			versions = ["3"]
+
+	if shutil.which(base):
+		return base
+
+	for version in versions:
+		candidates = [
+			f"{base}{version}",
+			f"{base}{version.replace('.', '_')}",
+			f"{base}{version.replace('.', '')}"
+		]
+
+		for candidate in candidates:
+			if shutil.which(candidate):
+				return candidate
+
+	return None
 
 class TestWorkspace:
 	def __init__(self, main_class: str, target: str, haxelibs: List[str], custom_hxml_flags: List[str], modules: List[dict]):
@@ -88,6 +113,18 @@ class TestWorkspace:
 			args.append("--cppia")
 			self._output_path = os.path.join(self.path, "output.cppia")
 			args.append(self._output_path)
+		elif self.target == "lua":
+			args.append("--lua")
+			self._output_path = os.path.join(self.path, "output.lua")
+			args.append(self._output_path)
+		elif self.target == "python":
+			args.append("--python")
+			self._output_path = os.path.join(self.path, "output.py")
+			args.append(self._output_path)
+		elif self.target == "c":
+			args.append("--cpp")
+			self._output_path = os.path.join(self.path, "output")
+			args.append(self._output_path)
 
 		for lib in self.haxelibs:
 			args.append("-L")
@@ -151,6 +188,12 @@ class TestWorkspace:
 					targetName = "'Hashlink VM'"
 				elif self.target == "cppia":
 					targetName = "'HXCPP'"
+				elif self.target == "lua":
+					targetName = "'lua'"
+				elif self.target == "python":
+					targetName = "'python'"
+				elif self.target == "c":
+					targetName = "'HXCPP' and 'clang'"
 
 				if targetName is not None:
 					addStr = f"Do you have {targetName} installed?\n"
@@ -173,6 +216,15 @@ class TestWorkspace:
 		elif self.target == "cppia":
 			runtime_cmd = "haxelib"
 			runtime_args = ["run", "hxcpp", self._output_path]
+		elif self.target == "lua":
+			runtime_cmd = find_lang_executable("lua")
+			runtime_args = [self._output_path]
+		elif self.target == "python":
+			runtime_cmd = find_lang_executable("python")
+			runtime_args = [self._output_path]
+		elif self.target == "c":
+			runtime_cmd = Path.joinpath(Path(self._output_path), self.main_class)
+			runtime_args = []
 		else:
 			return
 
