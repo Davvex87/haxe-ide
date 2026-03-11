@@ -71,5 +71,22 @@ Contributions are welcome! Here's how to get started:
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and test thoroughly
-4. Submit a pull request with a clear description
+3. [Run the python setup script](#python-setup)
+4. Make your changes and test thoroughly
+5. Submit a pull request with a clear description
+
+### Python setup
+To setup the virtual environment and the python libraries...
+
+- ...on linux, run:
+
+```sh
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+
+- ...on windows, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+```
