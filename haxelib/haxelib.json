@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "A small TUI application for composing and testing Haxe workspaces.",
-	"version": "1.1.0",
-	"releasenote": "Support for more targets, QoL features and more",
+	"version": "1.1.1",
+	"releasenote": "Windows setup command fix",
 	"contributors": ["Davvex87"]
 }

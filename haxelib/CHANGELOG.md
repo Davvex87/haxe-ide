@@ -1,3 +1,11 @@
+# 1.1.1 (March 14, 2026)
+
+## Additions and changes:
+- Added colors and bold text in specific parts of the `run` script
+
+## Fixes:
+- Fixed syntax bug preventing haxe-ide from opening on Windows machines.
+
 # 1.1.0 (March 11, 2026)
 
 ## Additions and changes:
