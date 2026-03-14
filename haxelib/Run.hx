@@ -35,7 +35,7 @@ class Run
 			{
 				if (libDir == null)
 				{
-					Sys.stderr().writeString("What?\nRun 'haxelib --global install haxe-ide' and try again.\n");
+					Sys.stderr().writeString("What?\nRun \x1b[1;35m'haxelib --global install haxe-ide'\x1b[0m and try again.\n");
 					Sys.exit(1);
 					return;
 				}
@@ -50,12 +50,12 @@ class Run
 				Sys.command("sudo", ["ln", "-s", scriptStr, linkStr]);
 			}
 
-			Sys.println("Haxe-IDE setup complete! You can now run 'haxe-ide' from the command line to start the IDE.");
+			Sys.println("Haxe-IDE setup complete! You can now run \x1b[1;34m'haxe-ide'\x1b[0m from the command line to start the IDE.");
 
 			return;
 		}
 
-		Sys.stderr().writeString("Run 'haxe-ide' from the command line to open the editor.\nCommand not found? Run 'haxelib --global run haxe-ide setup' and try again.\n");
+		Sys.stderr().writeString("Run \x1b[1;34m'haxe-ide'\x1b[0m from the command line to open the editor.\nCommand not found? Run \x1b[1;35m'haxelib --global run haxe-ide setup'\x1b[0m and try again.\n");
 		Sys.exit(2);
 	}
 
