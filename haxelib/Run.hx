@@ -28,7 +28,7 @@ class Run
 			if (isWin)
 			{
 				var f = File.write(linkPath, false);
-				f.writeString('@$libDir/haxe-ide.exe %*');
+				f.writeString('@"${Path.join([libDir, "haxe-ide.exe"])}" %*');
 				f.close();
 			}
 			else
