@@ -121,7 +121,7 @@ class ModuleFileTabPane(Static):
 					break
 
 	def compose(self) -> ComposeResult:
-		self.inputArea = TextArea(placeholder="Write some Haxe code here...", id="codeTextArea", show_line_numbers=True, soft_wrap=False)
+		self.inputArea = TextArea(placeholder="Write some code here...", id="codeTextArea", show_line_numbers=True, soft_wrap=False)
 
 		self.moduleNameInput = Input(placeholder="(Required) Module path...", classes="module-input")
 		self.fileTypeSelect = Select(((modType, to_snake_case(modType)) for modType in MODULE_TYPES), classes="small-select", allow_blank=False)
@@ -136,25 +136,11 @@ class ModuleFileTabPane(Static):
 
 	def on_button_pressed(self, event: Button.Pressed) -> None:
 		if event.button.id == "addModuleButton":
-
-			global insertCount
-			modName = f"Module{insertCount}"
-			insertCount += 1
-
-			moduleTabsContent = self.app.query_one("#moduleTabsContent", TabbedContent)
-			newPane = ModuleFileTabPane(
-				initial_content="",
-				initial_path=modName,
-				initial_type="haxe_module",
-			)
-			tabPane = TabPane(modName, newPane, id=random_id())
-			moduleTabsContent.add_pane(tabPane)
-			self.call_after_refresh(setattr, moduleTabsContent, "active", tabPane.id)
+			self.app.add_module_tab()
 		elif event.button.id == "deleteModuleButton":
-			moduleTabsContent = self.app.query_one("#moduleTabsContent", TabbedContent)
 			for ancestor in self.ancestors:
 				if isinstance(ancestor, TabPane):
-					moduleTabsContent.remove_pane(ancestor.id)
+					self.app.remove_module_tab(ancestor.id)
 					break
 
 class CodeEditorPanel(Static):
@@ -280,6 +266,63 @@ class MyApp(App):
 		Binding("f5", "run_stop_ws", "Run/Stop workspace", tooltip="Run or stop the current workspace"),
 	]
 
+	def next_module_name(self, reset: bool = False) -> str:
+		global insertCount
+
+		if reset:
+			insertCount = 1
+
+		module_name = f"Module{insertCount}"
+		insertCount += 1
+		return module_name
+
+	def add_module_tab(self, initial_content: str = "", initial_path: str | None = None, initial_type: str = "haxe_module", activate: bool = True) -> TabPane:
+		if initial_path is None:
+			initial_path = self.next_module_name()
+
+		moduleTabsContent = self.query_one("#moduleTabsContent", TabbedContent)
+		tabPane = TabPane(
+			initial_path,
+			ModuleFileTabPane(
+				initial_content=initial_content,
+				initial_path=initial_path,
+				initial_type=initial_type,
+			),
+			id=random_id()
+		)
+		moduleTabsContent.add_pane(tabPane)
+		if activate:
+			self.call_after_refresh(setattr, moduleTabsContent, "active", tabPane.id)
+		return tabPane
+
+	def _reset_module_tab(self, tab_pane: TabPane, initial_content: str = "", initial_path: str | None = None, initial_type: str = "haxe_module") -> None:
+		if initial_path is None:
+			initial_path = self.next_module_name(reset=True)
+
+		moduleTabsContent = self.query_one("#moduleTabsContent", TabbedContent)
+		pane = tab_pane.query_one(ModuleFileTabPane)
+		pane.fileTypeSelect.value = initial_type
+		pane.moduleNameInput.value = initial_path
+		pane.inputArea.text = initial_content
+		moduleTabsContent.active = tab_pane.id
+
+	def remove_module_tab(self, tab_id: str) -> None:
+		moduleTabsContent = self.query_one("#moduleTabsContent", TabbedContent)
+		tabPanes = tuple(moduleTabsContent.query(TabPane))
+
+		if len(tabPanes) <= 1:
+			for tab_pane in tabPanes:
+				if tab_pane.id == tab_id:
+					self._reset_module_tab(tab_pane)
+					return
+
+		moduleTabsContent.remove_pane(tab_id)
+
+	def ensure_module_tab_exists(self) -> None:
+		moduleTabsContent = self.query_one("#moduleTabsContent", TabbedContent)
+		if len(tuple(moduleTabsContent.query(TabPane))) == 0:
+			self.add_module_tab(initial_path=self.next_module_name(reset=True))
+
 	def compose(self) -> ComposeResult:
 		self._manual_stop = False
 		self._action_debounce = False
@@ -309,6 +352,7 @@ class MyApp(App):
 
 	def on_ready(self) -> None:
 		self.loadExampleData("Hello world")
+		self.ensure_module_tab_exists()
 	
 	async def on_key(self, event) -> None:
 		focused = self.focused
@@ -377,15 +421,17 @@ class MyApp(App):
 		moduleTabsContent.clear_panes()
 		firstPane = None
 		for resource in data["resources"]:
-			pane = ModuleFileTabPane(
+			tabPane = self.add_module_tab(
 				initial_content=resource["content"],
 				initial_path=resource["path"],
 				initial_type=resource["type"],
+				activate=False,
 			)
-			tabPane = TabPane(resource["path"], pane, id=random_id())
 			if firstPane is None:
 				firstPane = tabPane
-			moduleTabsContent.add_pane(tabPane)
+
+		if firstPane is None:
+			firstPane = self.add_module_tab(activate=False)
 
 		self.call_after_refresh(setattr, moduleTabsContent, "active", firstPane.id)
 
