@@ -121,7 +121,7 @@ class ModuleFileTabPane(Static):
 					break
 
 	def compose(self) -> ComposeResult:
-		self.inputArea = TextArea(placeholder="Write some Haxe code here...", id="codeTextArea")
+		self.inputArea = TextArea(placeholder="Write some Haxe code here...", id="codeTextArea", show_line_numbers=True)
 		self.moduleNameInput = Input(placeholder="(Required) Module path...", classes="module-input")
 		self.fileTypeSelect = Select(((modType, to_snake_case(modType)) for modType in MODULE_TYPES), classes="small-select", allow_blank=False)
 
