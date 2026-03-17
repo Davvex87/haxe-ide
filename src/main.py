@@ -26,6 +26,7 @@ import sys
 from testworkspace import TestWorkspace
 from cmdproviders import ExampleProvider
 from resources import resource_path
+from code_area import CodeArea
 import uuid
 
 
@@ -97,6 +98,7 @@ class ModuleFileTabPane(Static):
 			self.moduleNameInput.value = self._initial_path
 		if self._initial_type:
 			self.fileTypeSelect.value = self._initial_type
+		self._apply_editor_mode(self.fileTypeSelect.value)
 
 	_VALID_PATH_RE = re.compile(r'^[a-zA-Z0-9_]+(/[a-zA-Z0-9_]+)*(\.[a-zA-Z0-9_]+)?$')
 
@@ -120,8 +122,21 @@ class ModuleFileTabPane(Static):
 						tab.label = label
 					break
 
+	def on_select_changed(self, event: Select.Changed) -> None:
+		if event.select is self.fileTypeSelect:
+			self._apply_editor_mode(event.value)
+
+	def _apply_editor_mode(self, module_type) -> None:
+		if isinstance(self.inputArea, CodeArea):
+			if module_type == "haxe_module":
+				self.inputArea.set_syntax_mode("haxe")
+			elif module_type == "json_resource":
+				self.inputArea.set_syntax_mode("json")
+			else:
+				self.inputArea.set_syntax_mode("plain")
+
 	def compose(self) -> ComposeResult:
-		self.inputArea = TextArea(placeholder="Write some code here...", id="codeTextArea", show_line_numbers=True, soft_wrap=False)
+		self.inputArea = CodeArea(placeholder="Write some code here...", id="codeTextArea", show_line_numbers=True, soft_wrap=False)
 
 		self.moduleNameInput = Input(placeholder="(Required) Module path...", classes="module-input")
 		self.fileTypeSelect = Select(((modType, to_snake_case(modType)) for modType in MODULE_TYPES), classes="small-select", allow_blank=False)
