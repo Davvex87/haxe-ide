@@ -5,7 +5,7 @@ from typing import Any, ClassVar
 
 from rich.style import Style
 
-from syntax import SyntaxStyle, Token
+from ._syntax_style import SyntaxStyle, Token
 
 
 class JsonSyntaxStyle(SyntaxStyle):
